@@ -21,6 +21,7 @@ namespace TheCodeCamp.Controllers
             _repository = repository;
             _mapper = mapper;
         }
+
         [Route()]
         public async Task<IHttpActionResult> Get(bool includeTalks = false)
         {
