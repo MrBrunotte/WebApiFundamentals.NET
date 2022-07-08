@@ -41,5 +41,25 @@ namespace TheCodeCamp.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        // use the :int constraint to make sure only integers are allowed.
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> Get(string moniker, int id, bool includeSpeakers = false)
+        {
+            try
+            {
+                var result = await _repository.GetTalkByMonikerAsync(moniker, id, includeSpeakers);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(_mapper.Map<TalkModel>(result));
+            }
+            catch (Exception ex)
+            {
+
+                return InternalServerError(ex);
+            }
+        }
     }
 }
