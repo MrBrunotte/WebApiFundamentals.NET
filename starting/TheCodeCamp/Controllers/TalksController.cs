@@ -103,5 +103,66 @@ namespace TheCodeCamp.Controllers
             }
             return BadRequest(ModelState);
         }
+
+        [Route("{talkId:int}")]
+        public async Task<IHttpActionResult> Put(string moniker, int talkId, TalkModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var talk = await _repository.GetTalkByMonikerAsync(moniker, talkId, true);
+                    if (talk == null) return NotFound();
+
+                    // it's going to ignore the Speaker
+                    _mapper.Map(model, talk);
+
+                    // Change speaker if needed
+                    if (talk.Speaker.SpeakerId != model.Speaker.SpeakerId)
+                    {
+                        var speaker = await _repository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                        if (speaker != null) talk.Speaker = speaker;
+                    }
+
+
+                    if (await _repository.SaveChangesAsync())
+                    {
+                        return Ok(_mapper.Map<TalkModel>(talk));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [Route("{talkId:int}")]
+        public async Task<IHttpActionResult> Delete(string moniker, int talkId)
+        {
+            try
+            {
+                var talk = await _repository.GetTalkByMonikerAsync(moniker, talkId);
+                if (talk == null) return NotFound();
+
+                _repository.DeleteTalk(talk);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return InternalServerError();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return InternalServerError(ex);
+            }
+        }
     }
 }
