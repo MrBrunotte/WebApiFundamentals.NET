@@ -1,10 +1,12 @@
 ﻿using Microsoft.Web.Http;
 using Microsoft.Web.Http.Versioning;
+using Microsoft.Web.Http.Versioning.Conventions;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using TheCodeCamp.Controllers;
 
 namespace TheCodeCamp
 {
@@ -32,6 +34,13 @@ namespace TheCodeCamp
             cfg.ApiVersionReader = ApiVersionReader.Combine(
             new HeaderApiVersionReader("X-Version"),
             new QueryStringApiVersionReader("ver"));
+
+                // Versioning Conventions
+                cfg.Conventions.Controller<TalksController>()
+                        .HasApiVersion(1, 0)
+                        .HasApiVersion(1, 1)
+                        .Action(m => m.Get(default(string), default(int), default(bool)))
+                        .MapToApiVersion(2,0);
         });
 
     // Change Case of JSON (eventDate instead of EventDate)
