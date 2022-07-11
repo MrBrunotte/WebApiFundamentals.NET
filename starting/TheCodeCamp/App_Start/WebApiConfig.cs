@@ -15,18 +15,23 @@ namespace TheCodeCamp
       // Web API configuration and services
       AutofacConfig.Register();
 
-        config.AddApiVersioning(cfg =>
-        {
-            // default version is 1,1
+            config.AddApiVersioning(cfg =>
+            {
+        // default version is 1,1
             cfg.DefaultApiVersion = new ApiVersion(1, 1);
-            // assumes the we are using version 1,1
+        // assumes the we are using version 1,1
             cfg.AssumeDefaultVersionWhenUnspecified = true;
-            // displays a new header named api-supported-versions (in postman headers when you call the api)
-            // reports to people what versions are supported for the call they just made.
+        // displays a new header named api-supported-versions (in postman headers when you call the api)
+        // reports to people what versions are supported for the call they just made.
             cfg.ReportApiVersions = true;
 
-            // chagne how we read the version
-            cfg.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+        // chagne how we read the version
+        //cfg.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+
+        //multiple versioning methods
+            cfg.ApiVersionReader = ApiVersionReader.Combine(
+            new HeaderApiVersionReader("X-Version"),
+            new QueryStringApiVersionReader("ver"));
         });
 
     // Change Case of JSON (eventDate instead of EventDate)
